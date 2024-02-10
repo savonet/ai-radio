@@ -4,7 +4,11 @@ base_dir = path.dirname(argv(0))
 audio_dir = path.concat(base_dir, "audio")
 background_dir = path.concat(base_dir, "background")
 hls_dir = path.concat(base_dir, "hls")
-font = path.concat(base_dir, "MesloLGS NF Bold.ttf")
+font =
+  path.concat(
+    base_dir,
+    "MesloLGS NF Bold.ttf"
+  )
 
 let {px, vw, vh, rem, width, height} = video.canvas.virtual_10k.actual_720p
 
@@ -267,13 +271,7 @@ radio =
 enc =
   %ffmpeg(
     format = "mpegts",
-    %audio(
-      codec = "aac",
-      samplerate = 44100,
-      channels = 2,
-      b = "192k",
-      profile = "aac_low"
-    ),
+    %audio(codec = "aac", b = "192k"),
     %video(codec = "libx264", preset = "ultrafast", g = 50)
   )
 
