@@ -72,6 +72,60 @@ def generate_speech(prompt) =
   )
 end
 
+## Audio setup
+
+next_song = ref([])
+def check_next(r) =
+  ignore(request.resolve(r))
+  request.read_metadata(r)
+  next_song := request.metadata(r)
+  true
+end
+
+radio = playlist(audio_dir, prefetch=2, check_next=check_next)
+
+append_queue = request.queue()
+
+past_songs = ref([])
+
+def process_dj_metadata(m) =
+  past_songs := [...past_songs(), m]
+
+  if
+    list.length(past_songs()) == 4
+  then
+    songs_history = past_songs()
+    past_songs := []
+    prompt = mk_prompt(songs_history, next_song())
+
+    thread.run({append_queue.push(generate_speech(prompt))})
+  end
+end
+
+radio = source.on_metadata(radio, process_dj_metadata)
+
+radio = fallback(track_sensitive=true, [append_queue, radio])
+
+current_title = ref("")
+current_artist = ref("")
+
+def update_current_song(m) =
+  current_title := m["title"]
+  current_artist := m["artist"]
+end
+radio.on_metadata(update_current_song)
+
+def position() =
+  source.elapsed(radio) / source.duration(radio)
+end
+
+def remaining() =
+  time = source.remaining(radio)
+  seconds = string.of_int(digits=2, int(time mod 60.))
+  minutes = string.of_int(digits=2, int(time / 60.))
+  "#{minutes}:#{seconds}"
+end
+
 ## Video setup
 
 background = playlist(background_dir)
@@ -151,58 +205,6 @@ background =
     background
   )
 
-next_song = ref([])
-def check_next(r) =
-  ignore(request.resolve(r))
-  request.read_metadata(r)
-  next_song := request.metadata(r)
-  true
-end
-
-radio = playlist(audio_dir, prefetch=2, check_next=check_next)
-
-append_queue = request.queue()
-
-past_songs = ref([])
-
-def process_dj_metadata(m) =
-  past_songs := [...past_songs(), m]
-
-  if
-    list.length(past_songs()) == 4
-  then
-    songs_history = past_songs()
-    past_songs := []
-    prompt = mk_prompt(songs_history, next_song())
-
-    thread.run({append_queue.push(generate_speech(prompt))})
-  end
-end
-
-radio = source.on_metadata(radio, process_dj_metadata)
-
-radio = fallback(track_sensitive=true, [append_queue, radio])
-
-current_title = ref("")
-current_artist = ref("")
-
-def update_current_song(m) =
-  current_title := m["title"]
-  current_artist := m["artist"]
-end
-radio.on_metadata(update_current_song)
-
-def position() =
-  source.elapsed(radio) / source.duration(radio)
-end
-
-def remaining() =
-  time = source.remaining(radio)
-  seconds = string.of_int(digits=2, int(time mod 60.))
-  minutes = string.of_int(digits=2, int(time / 60.))
-  "#{minutes}:#{seconds}"
-end
-
 background =
   video.add_text(
     color=0xFCB900,
@@ -249,11 +251,6 @@ background =
     },
     background
   )
-
-###### COVER ART MANAGER ######
-
-#cover_file = file.cover.manager(default="./default-cover.jpg")
-#radio.on_track(cover_file.set)
 
 radio = source.mux.video(video=background, radio)
 
