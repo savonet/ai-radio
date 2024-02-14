@@ -2,7 +2,7 @@
 
 The code is in this repository is presented in https://www.liquidsoap.info/blog/2024-02-10-video-canvas-and-ai/
 
-It is adapted from original code from the [AzuraCast](https://www.azuracast.com/) community and in particular original code from [@gAlleb](https://github.com/gAlleb).
+It is adapted from original code from the [AzuraCast](https://www.azuracast.com/) community and in particular code from [@gAlleb](https://github.com/gAlleb).
 
 It builds a video radio with an automated AI DJ inserted every 4 tracks.
 
