@@ -14,3 +14,5 @@ openai_api_key = "aabbccdd"
 * Place audio files in `audio/`
 
 Next: run the script!
+
+For `main`/`v2.3.x`, you can run the top-level `main.liq` script. For `v2.2.x` you can run `v2.2.x/main.liq`.
