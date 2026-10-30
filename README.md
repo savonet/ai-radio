@@ -1,20 +1,24 @@
 # AI Radio
 
-The code is in this repository is presented in https://www.liquidsoap.info/blog/2024-02-10-video-canvas-and-ai/
+The code in this repository is presented in https://www.liquidsoap.info/blog/2024-02-10-video-canvas-and-ai/
 
 It is adapted from original code from the [AzuraCast](https://www.azuracast.com/) community and in particular code from [@gAlleb](https://github.com/gAlleb).
 
-It builds a video radio with an automated AI DJ inserted every 4 tracks.
+It builds a video radio with an automated AI DJ inserted every 4 tracks. The DJ text is written by Claude and read by OpenAI text-to-speech.
 
 To run:
-* Install or build locally a version of liquidsoap `2.3.x` (current `main` branch as of writting) or the latest stable `2.2.x` release (preferably `2.2.4` or later) and backport the APIs as explained in the blog post
+* Install liquidsoap `2.5.x`
 * Create a `config.liq` with the following content:
 ```liquidsoap
-openai_api_key = "aabbccdd"
+anthropic_api_key = "sk-ant-..."
+openai_api_key = "sk-..."
 ```
 * Place video files in `background/`
 * Place audio files in `audio/`
 
-Next: run the script!
+Then run `liquidsoap main.liq`. The HLS stream is written to `hls/`.
 
-For `main`/`v2.3.x`, you can run the top-level `main.liq` script. For `v2.2.x` you can run `v2.2.x/main.liq`.
+Files:
+* `main.liq`: wiring and output
+* `dj.liq`: AI DJ (Claude prompt, speech synthesis, scheduling)
+* `overlay.liq`: video canvas UI

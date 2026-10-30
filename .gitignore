@@ -2,3 +2,7 @@ audio/
 background/
 hls/
 config.liq
+bench/
+hls_a/
+hls_b/
+hls_8k/
